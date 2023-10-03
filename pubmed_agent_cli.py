@@ -4,7 +4,7 @@ import openai
 
 if __name__ == "__main__":
     """
-    $ python $SOURCE/pubmed_qa_bot/pubmed_agent_cli.py \
+    $ python $BASE_DIR/pubmed_qa_bot/pubmed_agent_cli.py \
       --api_key dummy_key
       --state 0 \
       --question "What is the role of chemokines and chemokine receptors by lymphatic vessels (LVs) in leukocyte traffic and cancer metastasis?"
@@ -28,7 +28,13 @@ if __name__ == "__main__":
             response, chat_history = agent.run(question=question, chat_history=chat_history, state=args.state)
             print(response)
         else:
-            response, chat_history = agent.run(question=args.question, chat_history=chat_history, state=args.state)
-            print(response)
+            if args.question:
+                response, chat_history = agent.run(question=args.question, chat_history=chat_history, state=args.state)
+                print(response)
+                args.question = ''
+            else:
+                question = input(">> ")
+                response, chat_history = agent.run(question=question, chat_history=chat_history, state=args.state)
+                print(response)
 
         args.state = int(input("Enter the desired state, to exit enter 2>> "))

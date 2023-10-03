@@ -5,6 +5,7 @@ import json
 from sentence_transformers import SentenceTransformer
 
 import constants
+import annoy
 
 CHUNK_SIZE = 100
 EMPTY_EMBEDDING = np.zeros(384)

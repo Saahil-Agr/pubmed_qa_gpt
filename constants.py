@@ -22,20 +22,23 @@ if os.getenv('BASE_DIR', ''):
 else:
     BASE_DIR = '/Users/saahilagrawal/Documents/personal/projects/'
     os.environ['BASE_DIR'] = BASE_DIR
-    raise Warning("Please set the directory which contains the github repo as the base directory by doing: "
-                  "export $BASE_DIR=<~/path/to/repo>")
+    # raise Warning("Please set the directory which contains the github repo as the base directory by doing: "
+    #               "export $BASE_DIR=<~/path/to/repo>")
 
 RUNTIME_DATA_DIR_NAME = 'agent_data'
 REPO_BASE_DIR = 'pubmed_qa_bot'
 OTHER_DATA_DIR_NAME = 'pubmed_data'
 
 PAPER_EMBEDDING_DIR = 'paper_embedding'
-VECTOR_DB_DIR = "trained_scann"
+SCANN_DB_DIR = "trained_scann"
+TRAINED_ANNOY_DIR = "trained_annoy"
+ANNOY_FILE_NAME = "index.ann"
 EMBEDDING_IDX_TO_PAPER_MAP = 'embedding_idx_paper_file_name_map.jsonl'
 
 RUNTIME_DATA_DIR_PATH = os.path.join(BASE_DIR, REPO_BASE_DIR, RUNTIME_DATA_DIR_NAME)
 EMBEDDINGS_FOLDER_PATH = os.path.join(RUNTIME_DATA_DIR_PATH, PAPER_EMBEDDING_DIR)
-TRAINED_VECTOR_DB_PATH = os.path.join(RUNTIME_DATA_DIR_PATH, VECTOR_DB_DIR)
+TRAINED_VECTOR_DB_PATH = os.path.join(RUNTIME_DATA_DIR_PATH, SCANN_DB_DIR)
+TRAINED_ANNOY_DB_PATH = os.path.join(RUNTIME_DATA_DIR_PATH, TRAINED_ANNOY_DIR)
 EMBEDDING_INDEX_TO_PAPER_FILE_PATH = os.path.join(RUNTIME_DATA_DIR_PATH, EMBEDDING_IDX_TO_PAPER_MAP)
 
 OTHER_DATA_DIR = os.path.join(BASE_DIR, OTHER_DATA_DIR_NAME)

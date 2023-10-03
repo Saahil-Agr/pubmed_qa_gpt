@@ -1,17 +1,18 @@
-import attr
-
 from typing import Any, List, Union, Tuple
 import json
 import attr
 import numpy as np
 from sentence_transformers import SentenceTransformer
-import scann
+# import scann
 import constants
 import os
+from annoy import AnnoyIndex
+
+EMBEDDING_VECTOR_DIM = 768
 
 @attr.s
 class RetrievalArgs:
-    trained_vector_db_file_path: str = attr.ib(default=constants.TRAINED_VECTOR_DB_PATH)
+    trained_vector_db_file_path: str = attr.ib(default=os.path.join(constants.TRAINED_ANNOY_DB_PATH, constants.ANNOY_FILE_NAME))
     vector_db_index_to_papers_map_file_path: str = attr.ib(default=constants.EMBEDDING_INDEX_TO_PAPER_FILE_PATH)
     paper_text_files_path: str = attr.ib(default=constants.CLEANED_TEXT_FOLDER_PATH)
     top_k: int = attr.ib(default=5)
@@ -41,7 +42,9 @@ class DocumentRetriever:
     def load_pre_trained_vector_db(path: str):
         ''' It currently assumes the SCANN Model from Google and relies on it's load API. However, this can be generalized once there are wrapper around these different model classes.
         '''
-        trained_vector_index = scann.scann_ops_pybind.load_searcher(path)
+        # trained_vector_index = scann.scann_ops_pybind.load_searcher(path)
+        trained_vector_index = AnnoyIndex(EMBEDDING_VECTOR_DIM, 'angular')
+        trained_vector_index.load(path)
         return trained_vector_index
 
     def load_idx_to_paper_maps(self, file_name: str = constants.EMBEDDING_INDEX_TO_PAPER_FILE_PATH):
@@ -61,7 +64,7 @@ class DocumentRetriever:
         if top_k is None:
             top_k = self.top_k
 
-        indexes, scores = self.vector_db.search(query_embedding, final_num_neighbors=top_k)
+        indexes, scores = self.vector_db.get_nns_by_vector(query_embedding, n=top_k, include_distances=True)
         return indexes, scores
 
     def retrieve_candidate_papers_for_query(self, query: Union[str, np.array], k: int = None) -> List[Tuple[str, str]]:
@@ -92,7 +95,7 @@ class DocumentRetriever:
     def get_abstract_from_paper_file_name(self, paper_file_name: Tuple[str, str]):
         paper_name = paper_file_name[0]
         file_name = paper_file_name[1]
-        file_path = self.paper_text_files_path + file_name
+        file_path = os.path.join(self.paper_text_files_path,file_name)
         with open(file_path, 'r') as f:
             papers = json.loads(f.readlines()[0])
             paper_text = papers.get(paper_name, {})
@@ -102,7 +105,7 @@ class DocumentRetriever:
     def get_body_from_paper_file_name(self, paper_file_name: Tuple[str, str]):
         paper_name = paper_file_name[0]
         file_name = paper_file_name[1]
-        file_path = self.paper_text_files_path + file_name
+        file_path = os.path.join(self.paper_text_files_path,file_name)
         with open(file_path, 'r') as f:
             papers = json.loads(f.readlines()[0])
             paper_text = papers.get(paper_name, {})
