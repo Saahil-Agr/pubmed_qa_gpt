@@ -1,0 +1,4 @@
+assets {
+  asset_type: DATASET_NPY
+  asset_path: "/dbfs/FileStore/user/sagrawal/pubmed/test/scann/dataset.npy"
+}
